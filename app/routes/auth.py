@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 from flask_wtf import FlaskForm
 from wtforms import StringField
-from wtforms.validators import DataRequired, Length
-from app.database import db
+from wtforms.validators import DataRequired, Length, Email
+from app.extensions import db
 from app.models.User import User
 from sqlalchemy import select
 from flask_jwt_extended import create_access_token
@@ -25,7 +25,7 @@ def login():
         if user is not None:
             if user.check_password(form.password):
                 # Correct, make new jwt
-                token = create_access_token(identity=str(user.id))
+                token = create_access_token(identity=str(user.id), additional_claims={"role": user.role})
 
                 return jsonify({"status": "success", "access_token": token}), 400
             else:

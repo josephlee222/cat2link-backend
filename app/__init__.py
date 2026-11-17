@@ -1,14 +1,16 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask
+import app.models
 from flask_migrate import Migrate
-from app.database import db
+from app.extensions import db, jwt
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
-import app.models
+
 
 #Import Routes
-from app.routes.user import userRoutes
+from app.routes.admin.user import userRoutes
+from app.routes.auth import authRoutes
 
 def create_app():
     load_dotenv()
@@ -19,12 +21,18 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config['WTF_CSRF_ENABLED'] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=os.environ.get("JWT_TIMEOUT"))
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=int(os.environ.get("JWT_TIMEOUT")))
 
     # Initialize the app with the extension
     db.init_app(app)
 
-    app.register_blueprint(userRoutes, url_prefix="/users")
+    # Initialize JWT Manager with the app
+    jwt.init_app(app)
+
+    app.register_blueprint(userRoutes, url_prefix="/admin/users")
+    app.register_blueprint(authRoutes, url_prefix="/auth")
+
+    
 
     # Migrate/Update db
     Migrate(app, db)
