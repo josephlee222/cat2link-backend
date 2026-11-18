@@ -19,15 +19,14 @@ def login():
     form = LoginForm(data=json_data)
 
     if form.validate():
-        q = select(User).where(User.username == form.username)
-        user = db.session.scalar(q).first()
+        user = db.session.execute(db.select(User).filter_by(username=form.username.data)).scalar_one_or_none()
 
         if user is not None:
-            if user.check_password(form.password):
+            if user.check_password(form.password.data):
                 # Correct, make new jwt
                 token = create_access_token(identity=str(user.id), additional_claims={"role": user.role})
 
-                return jsonify({"status": "success", "access_token": token}), 400
+                return jsonify({"status": "success", "access_token": token, "user": user.get_profile()})
             else:
                 return jsonify({"status": "error", "errors": ["User password is incorrect"]}), 400
         else:

@@ -16,5 +16,13 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def get_profile(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "role": self.role
+        }
+
     def __repr__(self):
         return f"<User {self.username}>"
