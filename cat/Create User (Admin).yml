@@ -1,0 +1,23 @@
+info:
+  name: Create User (Admin)
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{url}}/admin/users/"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "joseph222",
+        "email": "facebooklee52@gmail.com",
+        "password": "test1234"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -28,9 +28,9 @@ def login():
 
                 return jsonify({"status": "success", "access_token": token, "user": user.get_profile()})
             else:
-                return jsonify({"status": "error", "errors": ["User password is incorrect"]}), 400
+                return jsonify({"status": "error", "errors": ["Username or password is incorrect"]}), 401
         else:
-            return jsonify({"status": "error", "errors": ["User does not exist"]}), 400
+            return jsonify({"status": "error", "errors": ["Username or password is incorrect"]}), 401
 
 
 

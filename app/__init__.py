@@ -47,7 +47,10 @@ def create_app():
     app.register_blueprint(userRoutes, url_prefix="/admin/users")
     app.register_blueprint(authRoutes, url_prefix="/auth")
 
-    
+    @app.errorhandler(Exception)
+    def internal_server_error(e):
+        app.logger.error(f"Server error: {e}")
+        return {"status": "error",'message': 'Server error has occured!'}, 500
 
     # Migrate/Update db
     Migrate(app, db)

@@ -17,6 +17,6 @@ def admin_auth_required(func):
         verify_jwt_in_request()
         claims = get_jwt()
         if claims.get('role') != 'admin':
-            return {'message': 'Admin access required'}, 403
+            return {"status": "error",'message': 'Admin access required'}, 403
         return func(*args, **kwargs)
     return wrapper_func
