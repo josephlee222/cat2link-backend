@@ -23,6 +23,9 @@ from app.routes.project import projectRoutes
 def create_app():
     load_dotenv()
     app = Flask(__name__)
+    print(f"Project root path: {app.root_path}")
+    UPLOAD_FOLDER = os.path.abspath(os.path.join(app.root_path, '..', os.environ.get("UPLOAD_FOLDER", "uploads")))
+    print(f"Upload folder path: {UPLOAD_FOLDER}")
     
     # Configure SQLite database path (saves to the 'instance' folder)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -30,7 +33,7 @@ def create_app():
     app.config['WTF_CSRF_ENABLED'] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=int(os.environ.get("JWT_TIMEOUT")))
-    app.config["UPLOAD_FOLDER"] = os.environ.get("UPLOAD_FOLDER", "uploads")
+    app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
 
     # Additional init functions
@@ -52,7 +55,7 @@ def create_app():
             db.session.commit()
 
             # Create uploads directory if it doesn't exist
-            upload_dir = os.environ.get("UPLOAD_FOLDER", "uploads")
+            upload_dir = UPLOAD_FOLDER
             if not os.path.exists(upload_dir):
                 os.makedirs(upload_dir)
 

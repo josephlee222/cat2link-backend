@@ -53,15 +53,13 @@ def add_media():
             )
 
             filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
-            upload_dir = "uploads"
-            if not os.path.exists(upload_dir):
-                os.makedirs(upload_dir)
-            file.save(os.path.join(upload_dir, filename))
-            media.url = os.path.join(upload_dir, filename)
+            file_path = os.path.join(os.environ.get("UPLOAD_FOLDER", "uploads"), filename)
+            file.save(file_path)
+            media.url = filename
 
             db.session.add(media)
             db.session.commit()
-            return jsonify({"status": "success", "media": media.get_info()}), 201
+            return jsonify({"status": "success", "media": media.get_summary()}), 201
         else:
             return generate_error_response("Project not found", 404)
     return generate_error_response("Validation failed", 400, errors=form.errors)
@@ -71,7 +69,7 @@ def add_media():
 @admin_auth_required
 def get_media():
     media_list = db.session.query(Media).all()
-    return jsonify({"status": "success", "media": [m.get_info() for m in media_list]}), 200
+    return jsonify({"status": "success", "media": [m.get_summary() for m in media_list]}), 200
 
 
 @adminMediaRoutes.route("/<int:media_id>", methods=["GET"])
@@ -79,7 +77,7 @@ def get_media():
 def get_media_by_id(media_id):
     media = db.session.query(Media).filter_by(id=media_id).first()
     if media:
-        return jsonify({"status": "success", "media": media.get_info()}), 200
+        return jsonify({"status": "success", "media": media.get_summary()}), 200
     return generate_error_response("Media not found", 404)
 
 
