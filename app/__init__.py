@@ -5,13 +5,19 @@ from flask_migrate import Migrate
 from app.extensions import db, jwt
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from app.common import generate_error_response
 
 import app.models
 from app.models.User import User
+from app.models.Category import Category
 
 #Import Routes
 from app.routes.admin.user import userRoutes
+from app.routes.admin.project import adminProjectRoutes
+from app.routes.admin.media import adminMediaRoutes
+from app.routes.media import mediaRoutes
 from app.routes.auth import authRoutes
+from app.routes.project import projectRoutes
 
 
 def create_app():
@@ -24,6 +30,8 @@ def create_app():
     app.config['WTF_CSRF_ENABLED'] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=int(os.environ.get("JWT_TIMEOUT")))
+    app.config["UPLOAD_FOLDER"] = os.environ.get("UPLOAD_FOLDER", "uploads")
+    app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
 
     # Additional init functions
     def initialize_app():
@@ -35,6 +43,19 @@ def create_app():
                 db.session.add(admin)
                 db.session.commit()
 
+            # Create default categories if they don't exist
+            default_categories = ["Category 1", "Category 2"]
+            for category_name in default_categories:
+                if not Category.query.filter_by(name=category_name).first():
+                    category = Category(name=category_name)
+                    db.session.add(category)
+            db.session.commit()
+
+            # Create uploads directory if it doesn't exist
+            upload_dir = os.environ.get("UPLOAD_FOLDER", "uploads")
+            if not os.path.exists(upload_dir):
+                os.makedirs(upload_dir)
+
     # Initialize the app with the extension
     db.init_app(app)
 
@@ -45,12 +66,20 @@ def create_app():
     initialize_app()
 
     app.register_blueprint(userRoutes, url_prefix="/admin/users")
+    app.register_blueprint(adminProjectRoutes, url_prefix="/admin/projects")
     app.register_blueprint(authRoutes, url_prefix="/auth")
+    app.register_blueprint(projectRoutes, url_prefix="/projects")
+    app.register_blueprint(adminMediaRoutes, url_prefix="/admin/media")
+    app.register_blueprint(mediaRoutes, url_prefix="/media")
 
     @app.errorhandler(Exception)
     def internal_server_error(e):
+
+        if hasattr(e, "code") and e.code == 404:
+            return generate_error_response("Resource not found", 404)
+        
         app.logger.error(f"Server error: {e}")
-        return {"status": "error",'message': 'Server error has occured!'}, 500
+        return generate_error_response("Server error has occured!", 500)
 
     # Migrate/Update db
     Migrate(app, db)

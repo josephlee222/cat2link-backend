@@ -9,5 +9,18 @@ class Category(db.Model):
     # Links back to the category property in Project
     projects = db.relationship('Project', back_populates='category')
 
+    def get_info(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "projects": [p.get_info() for p in self.projects]
+        }
+
+    def get_summary(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+
     def __repr__(self):
         return f"<Category {self.name}>"

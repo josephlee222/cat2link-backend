@@ -4,3 +4,6 @@
 *.pem
 *.key
 .venv
+
+uploads/
+instance/

@@ -16,5 +16,14 @@ class Media(db.Model):
     # Links back to the category property in Project
     projects = db.relationship('Project', back_populates='media')
 
+    def get_summary(self):
+        return {
+            "id": self.id,
+            "project_id": self.project_id,
+            "url": self.url,
+            "media_type": self.media_type,
+            "alt_text": self.alt_text
+        }
+
     def __repr__(self):
             return f"<Media {self.alt_text}>"

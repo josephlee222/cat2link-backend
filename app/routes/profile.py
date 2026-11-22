@@ -15,11 +15,7 @@ def get_profile(user_id):
 
     if user:
         # Return the user data as JSON
-        return jsonify({
-            "id": user.id,
-            "username": user.username,
-            "email": user.email
-        }), 200
+        return jsonify(user.get_profile()), 200
     else:
         # Return an error message if the user is not found
         return jsonify({"error": "User not found"}), 404

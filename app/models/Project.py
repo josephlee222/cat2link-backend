@@ -11,5 +11,25 @@ class Project(db.Model):
     category = db.relationship('Category', back_populates='projects')
     media = db.relationship('Media', back_populates='projects')
 
+    def get_info(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "url": self.url,
+            "category_id": self.category_id,
+            "category": self.category.get_summary() if self.category else None,
+            "media": [m.get_summary() for m in self.media]
+        }
+
+    def get_summary(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "url": self.url,
+            "category_id": self.category_id
+        }
+
     def __repr__(self):
         return f"<Project {self.name}>"
