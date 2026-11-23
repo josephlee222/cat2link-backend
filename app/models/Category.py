@@ -13,7 +13,7 @@ class Category(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "projects": [p.get_info() for p in self.projects]
+            "projects": [p.get_summary() for p in self.projects]
         }
 
     def get_summary(self):

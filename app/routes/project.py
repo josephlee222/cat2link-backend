@@ -11,7 +11,7 @@ def get_project(project_id=None):
     if project_id is None:
         stmt = select(Project)
         projects = db.session.execute(stmt).scalars().all()
-        return jsonify([project.get_info() for project in projects]), 200
+        return jsonify([project.get_summary() for project in projects]), 200
 
     # Fetch the project from the database using the project_id
     stmt = select(Project).where(Project.id == project_id)

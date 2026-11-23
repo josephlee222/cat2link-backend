@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{url}}/projects/1"
+  url: "{{url}}/projects"
   auth: inherit
 
 settings:
@@ -13,4 +13,3 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-  forwardAuthorizationHeader: false

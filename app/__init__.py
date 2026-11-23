@@ -6,6 +6,7 @@ from app.extensions import db, jwt
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from app.common import generate_error_response
+from flask_cors import CORS
 
 import app.models
 from app.models.User import User
@@ -18,6 +19,7 @@ from app.routes.admin.media import adminMediaRoutes
 from app.routes.media import mediaRoutes
 from app.routes.auth import authRoutes
 from app.routes.project import projectRoutes
+from app.routes.category import categoryRoutes
 
 
 def create_app():
@@ -65,6 +67,9 @@ def create_app():
     # Initialize JWT Manager with the app
     jwt.init_app(app)
 
+    # Configure CORS for the app
+    CORS(app, origins=[os.environ.get("CORS_ORIGIN"), "http://localhost:5173"], supports_credentials=True, allow_headers=["Content-Type", "Authorization"], methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+
     # Initialisation tasks if required
     initialize_app()
 
@@ -74,6 +79,7 @@ def create_app():
     app.register_blueprint(projectRoutes, url_prefix="/projects")
     app.register_blueprint(adminMediaRoutes, url_prefix="/admin/media")
     app.register_blueprint(mediaRoutes, url_prefix="/media")
+    app.register_blueprint(categoryRoutes, url_prefix="/categories")
 
     @app.errorhandler(Exception)
     def internal_server_error(e):

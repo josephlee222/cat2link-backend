@@ -28,7 +28,8 @@ class Project(db.Model):
             "name": self.name,
             "description": self.description,
             "url": self.url,
-            "category_id": self.category_id
+            "category_id": self.category_id,
+            "category_name": self.category.name if self.category else None
         }
 
     def __repr__(self):
