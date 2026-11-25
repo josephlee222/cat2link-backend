@@ -55,3 +55,9 @@ def refresh():
 
     response = jsonify({"status": "success", "access_token": access_token, "user": user.get_profile()})
     return response, 200
+
+@authRoutes.route('/logout', methods=['GET'])
+def logout():
+    response = jsonify({"status": "success"})
+    response.set_cookie("refresh_token", "", expires=0, httponly=True, path="/auth/refresh", secure=True, samesite="Strict")
+    return response, 200
