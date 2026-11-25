@@ -34,7 +34,9 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config['WTF_CSRF_ENABLED'] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=int(os.environ.get("JWT_TIMEOUT")))
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=int(os.environ.get("JWT_ACCESS_TIMEOUT")))
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=int(os.environ.get("JWT_REFRESH_TIMEOUT")))
+    app.config["JWT_REFRESH_COOKIE_NAME"] = "refresh_token"
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
     app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
 
@@ -43,7 +45,7 @@ def create_app():
         # Create user
         with app.app_context():
             if not User.query.filter_by(username="admin").first():
-                admin = User(username="admin", email="admin@admin.com", role="admin")
+                admin = User(username="admin", name="Admin User", email="admin@admin.com", role="admin")
                 admin.set_password("admin123")
                 db.session.add(admin)
                 db.session.commit()

@@ -6,7 +6,10 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(50), default='user')
 
@@ -21,7 +24,10 @@ class User(db.Model):
             "id": self.id,
             "username": self.username,
             "email": self.email,
-            "role": self.role
+            "name": self.name,
+            "role": self.role,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
         }
 
     def __repr__(self):

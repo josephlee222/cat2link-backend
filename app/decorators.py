@@ -10,7 +10,7 @@ def auth_required(func):
         return func(*args, **kwargs)
     return wrapper_func
 
-# Decorator to check user have a valid JWT token and is an admin
+# Decorator to check user have a valid JWT access token and is an admin
 def admin_auth_required(func):
     @wraps(func)
     def wrapper_func(*args, **kwargs):
