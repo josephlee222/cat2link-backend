@@ -50,13 +50,13 @@ def create_app():
                 db.session.add(admin)
                 db.session.commit()
 
-            # Create default categories if they don't exist
+            # Create default categories if the category table is empty
             default_categories = ["Category 1", "Category 2"]
-            for category_name in default_categories:
-                if not Category.query.filter_by(name=category_name).first():
+            if not Category.query.first():
+                for category_name in default_categories:
                     category = Category(name=category_name)
                     db.session.add(category)
-            db.session.commit()
+                db.session.commit()
 
             # Create uploads directory if it doesn't exist
             upload_dir = UPLOAD_FOLDER
