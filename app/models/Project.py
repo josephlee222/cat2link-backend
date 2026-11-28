@@ -12,6 +12,7 @@ class Project(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     category = db.relationship('Category', back_populates='projects')
     media = db.relationship('Media', back_populates='projects')
+    thumbnail_media = db.relationship('Media', primaryjoin='and_(Project.id==Media.project_id, Media.is_thumbnail==True)', uselist=False, viewonly=True)
 
     def get_info(self):
         return {
@@ -23,7 +24,8 @@ class Project(db.Model):
             "year": self.year,
             "category_id": self.category_id,
             "category": self.category.get_summary() if self.category else None,
-            "media": [m.get_summary() for m in self.media]
+            "media": [m.get_summary() for m in self.media],
+            "thumbnail_media": self.thumbnail_media.get_summary() if self.thumbnail_media else None
         }
 
     def get_summary(self):
@@ -35,7 +37,8 @@ class Project(db.Model):
             "url": self.url,
             "year": self.year,
             "category_id": self.category_id,
-            "category_name": self.category.name if self.category else None
+            "category_name": self.category.name if self.category else None,
+            "thumbnail_media_url": self.thumbnail_media.url if self.thumbnail_media else None
         }
 
     def __repr__(self):

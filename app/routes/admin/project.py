@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 from flask_wtf import FlaskForm
-from wtforms import StringField
+from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, Length, Email
 from app.extensions import db
 from app.models.Project import Project
@@ -12,9 +12,11 @@ adminProjectRoutes = Blueprint("admin_project", __name__)
 
 class ProjectForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(max=80, message="Name must be less than 80 characters")])
-    description = StringField('Description', validators=[DataRequired(), Length(max=255, message="Description must be less than 255 characters")])
-    url = StringField('URL', validators=[DataRequired(), Length(max=255, message="URL must be less than 255 characters")])
+    description = StringField('Description', validators=[DataRequired()])
+    short_description = StringField('Short Description', validators=[DataRequired()])
+    url = StringField('URL', validators=[DataRequired(), Length(max=1024, message="URL must be less than 1024 characters")])
     category_id = StringField('Category ID', validators=[DataRequired()])
+    year = IntegerField('Year', validators=[DataRequired()])
 
 @adminProjectRoutes.route("/<int:project_id>", methods=["GET"]) 
 @adminProjectRoutes.route("/", methods=["GET"])
@@ -45,8 +47,10 @@ def create_project():
         project = Project(
             name=form.name.data,
             description=form.description.data,
+            short_description=form.short_description.data,
             url=form.url.data,
-            category_id=form.category_id.data
+            category_id=form.category_id.data,
+            year=form.year.data
         )
         db.session.add(project)
         db.session.commit()
@@ -77,8 +81,10 @@ def update_project(project_id):
         if project:
             project.name = form.name.data
             project.description = form.description.data
+            project.short_description = form.short_description.data
             project.url = form.url.data
             project.category_id = form.category_id.data
+            project.year = form.year.data
             db.session.commit()
             return jsonify({"status": "success", "project": project.get_summary()}), 200
         else:

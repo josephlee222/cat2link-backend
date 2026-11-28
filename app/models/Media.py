@@ -6,6 +6,7 @@ class Media(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
     url = db.Column(db.String(1024), nullable=False)
+    is_thumbnail = db.Column(db.Boolean, nullable=False, default=False)
 
     # 1 = Image
     # 2 = Video
@@ -22,7 +23,8 @@ class Media(db.Model):
             "project_id": self.project_id,
             "url": self.url,
             "media_type": self.media_type,
-            "alt_text": self.alt_text
+            "alt_text": self.alt_text,
+            "is_thumbnail": self.is_thumbnail
         }
 
     def __repr__(self):

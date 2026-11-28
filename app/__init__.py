@@ -73,7 +73,7 @@ def create_app():
     CORS(app, origins=[os.environ.get("CORS_ORIGIN"), "http://localhost:5173"], supports_credentials=True, allow_headers=["Content-Type", "Authorization"], methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
     # Initialisation tasks if required
-    initialize_app()
+    # initialize_app()
 
     app.register_blueprint(userRoutes, url_prefix="/admin/users")
     app.register_blueprint(adminProjectRoutes, url_prefix="/admin/projects")
